@@ -3,6 +3,11 @@
 #include <cassert>
 #include <iostream>
 
+#include <stdexcept>
+
+jmethodID get_static_mid(JNIEnv* env, jclass class_j, std::string method_name, std::string signature);
+jclass get_class(JNIEnv* env, std::string class_name);
+
 int main(int argc, char** argv) {
 	const char* java_class_name = "Main";
 	const char* java_method_name = "main";
@@ -25,28 +30,42 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 
-	jclass main_class = env->FindClass(java_class_name);
-	if (main_class == NULL) {
-		std::cerr << "FAILED: FindClass" << std::endl;
-		return -1;
-	}
+	jclass main_class = get_class(env, "Main");
+	jmethodID main_mid = get_static_mid(env, main_class, "main", "([Ljava/lang/String;)V");
 
-	jmethodID main_method = env->GetStaticMethodID(main_class, java_method_name, "([Ljava/lang/String;)V");
-	if (main_method == NULL) {
-		std::cerr << "FAILED: GetStaticMethodID" << std::endl;
-		return -1;
-	}
-
-	const jsize kNumArgs = 1;
+	// Build argument array
+	const jsize kNumArgs = 2;
 	jclass string_class = env->FindClass("java/lang/String");
 	jobject initial_element = NULL;
 	jobjectArray method_args = env->NewObjectArray(kNumArgs, string_class, initial_element);
-
-	jstring method_args_0 = env->NewStringUTF("Hello, Java!");
+	jstring method_args_0 = env->NewStringUTF("Hello1, Java!");
+	jstring method_args_1 = env->NewStringUTF("Hello2, Java!");
 	env->SetObjectArrayElement(method_args, 0, method_args_0);
+	env->SetObjectArrayElement(method_args, 1, method_args_1);
 
-	env->CallStaticVoidMethod(main_class, main_method, method_args);
+	// Call main() with above argument array
+	env->CallStaticVoidMethod(main_class, main_mid, method_args);
+
+	jmethodID invert_mid = get_static_mid(env, main_class, "invert", "(Z)Z");
+	jboolean b = true;
+	b = env->CallStaticBooleanMethod(main_class, invert_mid, b);
+	std::string val = b ? "TRUE" : "False";
+	std::cout << val << std::endl;
+
 	jvm->DestroyJavaVM();
-
 	return 0;
+}
+
+jclass get_class(JNIEnv* env, std::string class_name) {
+	jclass c = env->FindClass(class_name.c_str());
+	if (c == NULL) {
+		throw std::runtime_error("get_class : Class \"" + class_name + "\" not found!");
+	}
+}
+
+jmethodID get_static_mid(JNIEnv* env, jclass class_j, std::string method_name, std::string signature) {
+	jmethodID mid = env->GetStaticMethodID(class_j, method_name.c_str(), signature.c_str());
+	if (mid == NULL) {
+		throw std::runtime_error("get_static_mid : Method \"" + method_name + "\" not found!");
+	}
 }
