@@ -9,12 +9,9 @@ jmethodID get_static_mid(JNIEnv* env, jclass class_j, std::string method_name, s
 jclass get_class(JNIEnv* env, std::string class_name);
 
 int main(int argc, char** argv) {
-	const char* java_class_name = "Main";
-	const char* java_method_name = "main";
-
 	const int kNumOptions = 1;
 	JavaVMOption options[kNumOptions] = {
-		{ const_cast<char*>("-Djava.class.path=./"), NULL }
+		{ const_cast<char*>("-Djava.class.path=./my-app.jar"), NULL }
 	};
 
 	JavaVMInitArgs vm_args;
@@ -30,6 +27,11 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 
+	jclass main_class = get_class(env, "rdf4j_get_statements_from_server");
+	jmethodID main_mid = get_static_mid(env, main_class, "main", "([Ljava/lang/String;)V");
+	env->CallStaticVoidMethod(main_class, main_mid, NULL);
+	
+	/*
 	jclass main_class = get_class(env, "Main");
 	jmethodID main_mid = get_static_mid(env, main_class, "main", "([Ljava/lang/String;)V");
 
@@ -51,6 +53,7 @@ int main(int argc, char** argv) {
 	b = env->CallStaticBooleanMethod(main_class, invert_mid, b);
 	std::string val = b ? "TRUE" : "False";
 	std::cout << val << std::endl;
+	*/
 
 	jvm->DestroyJavaVM();
 	return 0;
