@@ -1,14 +1,19 @@
-#include <jni.h>
-
-#include <cassert>
 #include <iostream>
-
 #include <stdexcept>
-
-jmethodID get_static_mid(JNIEnv* env, jclass class_j, std::string method_name, std::string signature);
-jclass get_class(JNIEnv* env, std::string class_name);
+#include "JNI_Helper.hpp"
 
 int main(int argc, char** argv) {
+	JNI_Helper jh("./");
+	jclass main_class = jh.get_class("Main");
+	jmethodID invert_mid = jh.get_static_mid(main_class, "invert", "(Z)Z");
+
+	jboolean val = true;
+	val = jh.call_static_boolean_method(main_class, invert_mid, val);
+	std::string op = val ? "TRUE" : "False";
+	std::cout << op << std::endl;
+
+
+	/*
 	const int kNumOptions = 1;
 	JavaVMOption options[kNumOptions] = {
 		{ const_cast<char*>("-Djava.class.path=./my-app.jar"), NULL }
@@ -30,6 +35,7 @@ int main(int argc, char** argv) {
 	jclass main_class = get_class(env, "rdf4j_get_statements_from_server");
 	jmethodID main_mid = get_static_mid(env, main_class, "main", "([Ljava/lang/String;)V");
 	env->CallStaticVoidMethod(main_class, main_mid, NULL);
+	*/
 	
 	/*
 	jclass main_class = get_class(env, "Main");
@@ -55,20 +61,8 @@ int main(int argc, char** argv) {
 	std::cout << val << std::endl;
 	*/
 
+	/*
 	jvm->DestroyJavaVM();
 	return 0;
-}
-
-jclass get_class(JNIEnv* env, std::string class_name) {
-	jclass c = env->FindClass(class_name.c_str());
-	if (c == NULL) {
-		throw std::runtime_error("get_class : Class \"" + class_name + "\" not found!");
-	}
-}
-
-jmethodID get_static_mid(JNIEnv* env, jclass class_j, std::string method_name, std::string signature) {
-	jmethodID mid = env->GetStaticMethodID(class_j, method_name.c_str(), signature.c_str());
-	if (mid == NULL) {
-		throw std::runtime_error("get_static_mid : Method \"" + method_name + "\" not found!");
-	}
+	*/
 }
