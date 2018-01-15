@@ -1,6 +1,6 @@
 #include <iostream>
 #include <stdexcept>
-#include "JNI_Helper.hpp"
+#include "../JNI_Helper.hpp"
 
 int main(int argc, char** argv) {
 	JNI_Helper jh("./");
