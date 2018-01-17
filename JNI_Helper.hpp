@@ -10,7 +10,7 @@ class JNI_Helper {
 		JNIEnv* env;
 		JavaVM* jvm;
 	public:
-		JNI_Helper(std::string jar_path);
+		JNI_Helper(std::string class_path);
 		~JNI_Helper();
 
 		/*
@@ -32,28 +32,28 @@ class JNI_Helper {
 		get_static_mid(jclass class_j, std::string method_name, std::string signature);
 
 		/*
-			Calls a static void method in a class in the JVM
+			Calls a static double method in a class in the JVM
 			@param class_j The class where the method is
 			@param mid The method ID
-
-			TODO: Add support for arguments
+			@param args All arguments that should be passed to the function
+			@return The double as a jdouble object
 		*/
-		void
-		call_static_void_method(jclass class_j, jmethodID mid);
-
-		jboolean
-		call_static_boolean_method(jclass class_j, jmethodID mid, jboolean val);
-
 		template<typename... Types>
 		jdouble
-		call_static_double_method_args(jclass class_j, jmethodID mid, Types ...args) {
+		call_static_double_method(jclass class_j, jmethodID mid, Types ...args) {
 			jdouble val = env->CallStaticDoubleMethod(class_j, mid, args...);
 			return val;
 		}
 
+		/*
+			Calls a static void method in a class in the JVM
+			@param class_j The class where the method is
+			@param mid The method ID
+			@param args All arguments that should be passed to the function
+		*/
 		template<typename... Types>
 		void
-		call_static_void_method_args(jclass class_j, jmethodID mid, Types ...args) {
+		call_static_void_method(jclass class_j, jmethodID mid, Types ...args) {
 			env->CallStaticDoubleMethod(class_j, mid, args...);
 		}
 

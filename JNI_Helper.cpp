@@ -62,32 +62,6 @@ JNI_Helper::get_static_mid(jclass class_j, std::string method_name, std::string 
 	}
 }
 
-/*
-	Calls a static void method in a class in the JVM
-	@param class_j The class where the method is
-	@param mid The method ID
-
-	TODO: Add support for arguments
-*/
-void
-JNI_Helper::call_static_void_method(jclass class_j, jmethodID mid) {
-	env->CallStaticVoidMethod(class_j, mid, NULL);
-}
-
-/*
-template<typename... Types>
-void
-//JNI_Helper::call_static_void_method_args(jclass class_j, jmethodID mid, Types ...args) {
-JNI_Helper::call_static_void_method_args(Types ...args) {
-	env->CallStaticVoidMethod(args...);
-}
-*/
-
-jboolean
-JNI_Helper::call_static_boolean_method(jclass class_j, jmethodID mid, jboolean val) {
-	return env->CallStaticBooleanMethod(class_j, mid, val);
-}
-
 jstring 
 JNI_Helper::create_string(std::string str) {
 	jstring jstr = env->NewStringUTF(str.c_str());
