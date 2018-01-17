@@ -1,5 +1,12 @@
 #include "JNI_Helper.hpp"
 
+// Make JNI_Repo class that extends JNI_Helper
+// JNI_Repo has 
+// 	initialize_functions() method that gets all mids for all functions
+// 	a function for calling each Java function, with matching args
+// 		this uses the corresponding call_static_X_method in the superclass
+// system only needs to initialize JNI_Repo and can then use all functions
+
 JNI_Helper::JNI_Helper(std::string class_path) {
 	std::string jvm_command = "-Djava.class.path=" + class_path;
 
@@ -23,6 +30,7 @@ JNI_Helper::JNI_Helper(std::string class_path) {
 
 JNI_Helper::~JNI_Helper() {
 	jvm->DestroyJavaVM();
+	// CLOSE REPO
 	std::cout << "JVM destroyed!" << std::endl;
 }
 
@@ -66,7 +74,22 @@ JNI_Helper::call_static_void_method(jclass class_j, jmethodID mid) {
 	env->CallStaticVoidMethod(class_j, mid, NULL);
 }
 
+/*
+template<typename... Types>
+void
+//JNI_Helper::call_static_void_method_args(jclass class_j, jmethodID mid, Types ...args) {
+JNI_Helper::call_static_void_method_args(Types ...args) {
+	env->CallStaticVoidMethod(args...);
+}
+*/
+
 jboolean
 JNI_Helper::call_static_boolean_method(jclass class_j, jmethodID mid, jboolean val) {
 	return env->CallStaticBooleanMethod(class_j, mid, val);
+}
+
+jstring 
+JNI_Helper::create_string(std::string str) {
+	jstring jstr = env->NewStringUTF(str.c_str());
+	return jstr;
 }
