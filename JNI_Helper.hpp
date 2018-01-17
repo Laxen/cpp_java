@@ -43,6 +43,22 @@ class JNI_Helper {
 
 		jboolean
 		call_static_boolean_method(jclass class_j, jmethodID mid, jboolean val);
+
+		template<typename... Types>
+		jdouble
+		call_static_double_method_args(jclass class_j, jmethodID mid, Types ...args) {
+			jdouble val = env->CallStaticDoubleMethod(class_j, mid, args...);
+			return val;
+		}
+
+		template<typename... Types>
+		void
+		call_static_void_method_args(jclass class_j, jmethodID mid, Types ...args) {
+			env->CallStaticDoubleMethod(class_j, mid, args...);
+		}
+
+		jstring 
+		create_string(std::string str);
 };
 
 #endif
